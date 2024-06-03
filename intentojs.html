@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat de palabras compartidas</title>
+</head>
+<body>
+    <h1>Chat de palabras</h1>
+    <p id="message-area"></p>
+    <input type="text" id="word-input" placeholder="Introduce una palabra">
+    <button onclick="sendWord()">Enviar</button>
+    <script src="script.js"></script>
+<script>
+const http = require('http');
+const server = http.createServer();
+
+const io = require('socket.io')(server);
+
+server.listen(3000, () => console.log('Servidor activo en el puerto 3000'));
+
+io.on('connection', (socket) => {
+    socket.on('newWord', (word) => {
+        io.emit('newWord', word); // Emite la palabra a todos los usuarios conectados
+        const messageArea = document.getElementById('message-area');
+        messageArea.innerHTML += `<p>${word}</p>`; // Agrega la palabra al área de mensajes
+    });
+});
+function sendWord() {
+    const wordInput = document.getElementById('word-input');
+    const word = wordInput.value;
+    if (word) {
+        io.emit('newWord', word); // Envía la palabra al servidor
+        wordInput.value = ''; // Limpia el campo de entrada
+    }
+}
+</script>
+</body>
+</html>
