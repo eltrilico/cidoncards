@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar palabra con Socket.io</title>
+</head>
+<body>
+    <h1>Envía una palabra a otro usuario</h1>
+    <input type="text" id="palabra" placeholder="Escribe una palabra">
+    <button id="enviar">Enviar</button>
+
+    <div id="recibido"></div>
+
+    <script>
+        // Definición de la función para establecer la conexión con Socket.io
+        function connectSocket() {
+            const socket = io();
+
+            // Obtener referencias a los elementos del DOM
+            const palabraInput = document.getElementById('palabra');
+            const enviarBtn = document.getElementById('enviar');
+            const recibidoDiv = document.getElementById('recibido');
+
+            // Agregar evento click al botón "Enviar"
+            enviarBtn.addEventListener('click', () => {
+                const palabra = palabraInput.value;
+                if (palabra.trim()) {
+                    socket.emit('enviarPalabra', palabra);
+                    palabraInput.value = '';
+                }
+            });
+
+            // Agregar evento listener al evento 'recibirPalabra'
+            socket.on('recibirPalabra', (palabraRecibida) => {
+                recibidoDiv.innerHTML = `<h2>Palabra recibida: ${palabraRecibida}</h2>`;
+            });
+        }
+
+        // Llamar a la función para establecer la conexión al cargar la página
+        connectSocket();
+    </script>
+</body>
+</html>
